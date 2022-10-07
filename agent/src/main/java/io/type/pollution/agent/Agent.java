@@ -25,25 +25,21 @@ public class Agent {
             TraceInstanceOf.startMetronome();
         }
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            StringBuilder summary = new StringBuilder();
-            summary.append("--------------------------\n");
-            summary.append("Type Pollution Statistics:\n");
+            System.out.println("--------------------------\nType Pollution Statistics:");
             class MutableInt {
                 int rowId = 0;
             }
             MutableInt mutableInt = new MutableInt();
             TraceInstanceOf.orderedSnapshot(ENABLE_STATISTICS_CLEANUP).forEach(snapshot -> {
                 mutableInt.rowId++;
-                summary.append("--------------------------\n");
-                summary.append(mutableInt.rowId).append(":\t").append(snapshot.clazz.getName()).append('\n');
-                summary.append("Count:\t").append(snapshot.updateCount).append('\n');
-                summary.append("Types:\n");
+                System.out.println("--------------------------\n" + mutableInt.rowId + ":\t" + snapshot.clazz.getName());
+                System.out.println("Count:\t" + snapshot.updateCount + "\nTypes:");
                 for (Class seen : snapshot.seen) {
-                    summary.append("\t").append(seen.getName()).append('\n');
+                    System.out.println("\t" + seen.getName());
                 }
-                summary.append("Traces:\n");
+                System.out.println("Traces:");
                 for (String stack : snapshot.topStackTraces) {
-                    summary.append("\t").append(stack).append('\n');
+                    System.out.println("\t" + stack);
                 }
                 if (ENABLE_FULL_STACK_TRACES) {
                     summary.append("Full Traces:\n");
@@ -58,8 +54,7 @@ public class Agent {
                 }
             });
             if (mutableInt.rowId > 0) {
-                summary.append("--------------------------\n");
-                System.out.println(summary);
+                System.out.println("--------------------------\n");
             }
         }));
         final String[] agentArgsValues = agentArgs == null ? null : agentArgs.split(",");
